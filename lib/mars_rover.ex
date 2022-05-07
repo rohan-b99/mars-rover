@@ -4,15 +4,10 @@ defmodule MarsRover do
   """
 
   @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> MarsRover.hello()
-      :world
-
+  Run the application with the given input string,
+  returning the transformed output string
   """
-  def hello do
-    :world
+  def run(input) do
+    input
   end
 end
