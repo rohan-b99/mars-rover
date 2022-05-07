@@ -12,9 +12,19 @@ defmodule MarsRover do
     process_transforms(width, height, commands)
   end
 
+  @doc """
+  Parse an input string into a width, height and list of commands
+  """
+  @spec parse_input(String.t()) :: %{
+          commands: list(command()),
+          width: integer(),
+          height: integer()
+        }
   def parse_input(input) do
     [map_size | commands] = String.split(input, "\n")
-    [width, height] = map_size |> String.split(" ") |> Enum.map(&String.to_integer/1)
+
+    [width, height] =
+      map_size |> String.split(" ") |> Enum.map(&Integer.parse/1) |> Enum.map(&elem(&1, 0))
 
     %{commands: Enum.map(commands, &parse_command/1), width: width, height: height}
   end
@@ -32,11 +42,6 @@ defmodule MarsRover do
   """
   @spec parse_command(String.t()) :: command()
   def parse_command(command) do
-    # Alternatively:
-    # Regex.named_captures(
-    #   ~r/\((?<x>\d+), (?<y>\d+), (?<direction>N|E|S|W)\) (?<movements>.+)/,
-    #   command
-    # )
     with "(" <> rest <- command,
          {x, rest} <- Integer.parse(rest),
          ", " <> rest <- rest,
@@ -115,4 +120,17 @@ defmodule MarsRover do
   def turn("R", "E"), do: "S"
   def turn("R", "S"), do: "W"
   def turn("R", "W"), do: "N"
+
+  @doc """
+  Loads a text from from the first CLI argument and prints the input/output
+  """
+  def run_file do
+    input = System.argv() |> List.first() |> File.read!() |> String.trim()
+
+    IO.puts("Input:")
+    IO.puts(input)
+
+    IO.puts("\n\nOutput:")
+    IO.puts(MarsRover.run(input))
+  end
 end
